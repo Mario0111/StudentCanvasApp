@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.14.36109.1 d17.14
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StudentCanvasApp", "StudentCanvasApp.csproj", "{3BD9F5AC-AE4B-402B-85CE-828FE5E10412}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{3BD9F5AC-AE4B-402B-85CE-828FE5E10412}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3BD9F5AC-AE4B-402B-85CE-828FE5E10412}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3BD9F5AC-AE4B-402B-85CE-828FE5E10412}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3BD9F5AC-AE4B-402B-85CE-828FE5E10412}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {834A8F85-49E0-42DC-90D6-7BCB1AFB4264}
+	EndGlobalSection
+EndGlobal
