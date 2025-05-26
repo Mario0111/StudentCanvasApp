@@ -1,5 +1,6 @@
-﻿using System.Windows;
-using StudentCanvasApp.Database; // ⬅️ Make sure this matches your folder
+﻿using StudentCanvasApp.Controls;
+using System.Windows;
+using System.Windows.Controls;
 
 namespace StudentCanvasApp
 {
@@ -8,22 +9,21 @@ namespace StudentCanvasApp
         public MainWindow()
         {
             InitializeComponent();
+            NavigateTo(new LoginControl(this));
         }
 
-        private void AddStudent_Click(object sender, RoutedEventArgs e)
+        public void NavigateTo(UserControl control)
         {
-            string name = NameTextBox.Text.Trim();
-            string email = EmailTextBox.Text.Trim();
-            string password = PasswordBox.Password.Trim();
+            MainContent.Children.Clear();
+            MainContent.Children.Add(control);
+        }
 
-            if (string.IsNullOrWhiteSpace(name) || string.IsNullOrWhiteSpace(email) || string.IsNullOrWhiteSpace(password))
-            {
-                MessageBox.Show("Please fill in all fields.");
-                return;
-            }
-
-            var db = new DatabaseManager();
-            db.InsertStudent(name, email, password);
+        public void NavigateToRole(string role)
+        {
+            // You can create role-based dashboards here
+            MessageBox.Show($"Loading {role} panel...");
+            // Example: NavigateTo(new StudentDashboard(this));
         }
     }
 }
+
