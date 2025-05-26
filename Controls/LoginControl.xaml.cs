@@ -50,7 +50,8 @@ namespace StudentCanvasApp.Controls
                     if (role != null)
                     {
                         MessageBox.Show($"Login successful as {role}!");
-                        _mainWindow.NavigateToRole(role); // 🚨 You’ll add this method next
+                        _mainWindow.LoginEmail = email;
+                        _mainWindow.NavigateToRole(role); 
                     }
                     else
                     {

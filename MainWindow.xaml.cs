@@ -20,10 +20,16 @@ namespace StudentCanvasApp
 
         public void NavigateToRole(string role)
         {
-            // You can create role-based dashboards here
-            MessageBox.Show($"Loading {role} panel...");
-            // Example: NavigateTo(new StudentDashboard(this));
+            if (role == "student")
+            {
+                NavigateTo(new StudentDashboard(this, LoginEmail));
+            }
+            else
+            {
+                MessageBox.Show($"Dashboard for role '{role}' not implemented yet.");
+            }
         }
+        public string LoginEmail { get; set; }
     }
 }
 
