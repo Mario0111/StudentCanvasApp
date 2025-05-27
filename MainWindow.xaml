@@ -3,6 +3,6 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:controls="clr-namespace:StudentCanvasApp.Controls"
         Title="Student Canvas App" Height="350" Width="400">
-    <Grid x:Name="MainContent" />
+    <ContentControl x:Name="MainContent" />
 </Window>
 
