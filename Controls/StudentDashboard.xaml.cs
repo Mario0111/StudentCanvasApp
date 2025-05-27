@@ -40,9 +40,10 @@ namespace StudentCanvasApp.Controls
             {
                 conn.Open();
                 string query = @"
-                    SELECT c.ClassID, c.ClassName
+                    SELECT c.ClassID, c.ClassName, t.name AS TeacherName
                     FROM enrollment e
                     JOIN class c ON e.ClassID = c.ClassID
+                    JOIN teacher t ON c.TeacherID = t.TeacherID
                     WHERE e.StudentID = @StudentID";
 
                 MySqlCommand cmd = new MySqlCommand(query, conn);
@@ -54,7 +55,8 @@ namespace StudentCanvasApp.Controls
                     _classes.Add(new Class
                     {
                         ClassID = reader.GetInt32("ClassID"),
-                        ClassName = reader.GetString("ClassName")
+                        ClassName = reader.GetString("ClassName"),
+                        TeacherName = reader.GetString("TeacherName")
                     });
                 }
             }
@@ -99,13 +101,94 @@ namespace StudentCanvasApp.Controls
 
         private void AssignmentListBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (AssignmentListBox.SelectedItem is Assignment assignment)
+            var selectedAssignment = AssignmentListBox.SelectedItem as Assignment;
+            if (selectedAssignment == null) return;
+
+            AssignmentTitle.Text = $"Title: {selectedAssignment.Title}";
+            AssignmentDue.Text = $"Due: {(selectedAssignment.DueDate.HasValue ? selectedAssignment.DueDate.Value.ToString("dd MMM yyyy") : "No due date")}";
+            AssignmentDescription.Text = $"Description: {selectedAssignment.Description}";
+
+            SubmissionTextBox.Clear();
+            SubmissionTextBox.IsReadOnly = false;
+            SubmitAssignmentButton.IsEnabled = true;
+            SubmissionStatus.Text = "Not yet submitted.";
+
+            using (MySqlConnection conn = new MySqlConnection(connectionString))
             {
-                AssignmentTitle.Text = $"Title: {assignment.Title}";
-                AssignmentDue.Text = $"Due: {(assignment.DueDate.HasValue ? assignment.DueDate.Value.ToString("dd MMM yyyy") : "No due date")}";
-                AssignmentDescription.Text = $"Description: {assignment.Description}";
+                conn.Open();
+
+                string checkQuery = @"
+            SELECT SubmissionText, SubmittedAt
+            FROM submission
+            WHERE AssignmentID = @AssignmentID AND StudentID = @StudentID
+            LIMIT 1";
+
+                MySqlCommand cmd = new MySqlCommand(checkQuery, conn);
+                cmd.Parameters.AddWithValue("@AssignmentID", selectedAssignment.AssignmentID);
+                cmd.Parameters.AddWithValue("@StudentID", _studentId);
+
+                var reader = cmd.ExecuteReader();
+                if (reader.Read())
+                {
+                    string text = reader.GetString("SubmissionText");
+                    DateTime submittedAt = reader.GetDateTime("SubmittedAt");
+
+                    SubmissionTextBox.Text = text;
+                    SubmissionTextBox.IsReadOnly = true;
+                    SubmitAssignmentButton.IsEnabled = false;
+                    SubmissionStatus.Text = $"✅ Submitted at {submittedAt:dd MMM yyyy HH:mm}";
+                }
             }
         }
+
+
+        private void SubmitAssignment_Click(object sender, RoutedEventArgs e)
+        {
+            var selectedAssignment = AssignmentListBox.SelectedItem as Assignment;
+            if (selectedAssignment == null)
+            {
+                MessageBox.Show("Please select an assignment first.");
+                return;
+            }
+
+
+            string submissionText = SubmissionTextBox.Text.Trim();
+            if (string.IsNullOrEmpty(submissionText))
+            {
+                MessageBox.Show("Submission cannot be empty.");
+                return;
+            }
+
+            using (MySqlConnection conn = new MySqlConnection(connectionString))
+            {
+                conn.Open();
+
+                string query = @"
+            INSERT INTO submission (AssignmentID, StudentID, SubmissionText, SubmittedAt)
+            VALUES (@AssignmentID, @StudentID, @SubmissionText, NOW())";
+
+                MySqlCommand cmd = new MySqlCommand(query, conn);
+                cmd.Parameters.AddWithValue("@AssignmentID", selectedAssignment.AssignmentID);
+                cmd.Parameters.AddWithValue("@StudentID", _studentId);
+                cmd.Parameters.AddWithValue("@SubmissionText", submissionText);
+
+                int rows = cmd.ExecuteNonQuery();
+
+                if (rows > 0)
+                {
+                    MessageBox.Show("Assignment submitted successfully!");
+
+                    // Trigger the assignment selection again to refresh status
+                    AssignmentListBox_SelectionChanged(null, null);
+
+                }
+                else
+                {
+                    MessageBox.Show("Submission failed. Please try again.");
+                }
+            }
+        }
+
 
         private void Logout_Click(object sender, RoutedEventArgs e)
         {
