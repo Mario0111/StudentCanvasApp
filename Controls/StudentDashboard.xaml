@@ -81,18 +81,31 @@
                                    Margin="0,5,0,10"/>
 
                         <!-- 📝 Submission -->
-                        <TextBlock Text="Your Submission:" FontWeight="Bold" Margin="0,0,0,5"/>
+                        <TextBlock Text="Your Submission:" FontWeight="Bold" Margin="0,10,0,5"/>
                         <TextBox x:Name="SubmissionTextBox"
                                  AcceptsReturn="True"
                                  Height="100"
                                  TextWrapping="Wrap"
                                  Margin="0,0,0,5"/>
+                        <StackPanel Orientation="Vertical" Margin="0,0,0,5">
+                            <StackPanel Orientation="Horizontal">
+                                <Button Content="Choose File" Click="ChooseFile_Click" Width="100" Margin="0,0,10,0"/>
+                                <TextBlock x:Name="SelectedFileLabel" VerticalAlignment="Center" Text="No file selected" />
+                            </StackPanel>
+                            <Button x:Name="DownloadFileButton"
+                                    Content="Download File"
+                                    Click="DownloadFileButton_Click"
+                                    Width="120"
+                                    Margin="0,5,0,0"
+                                    Visibility="Collapsed"/>    
+                        </StackPanel>
+
                         <Button x:Name="SubmitAssignmentButton"
-                                  Content="Submit Assignment"
-                                  Click="SubmitAssignment_Click"
-                                  Width="150"
-                                  HorizontalAlignment="Left"
-                                  Margin="0,5,0,0"/>      
+                                Content="Submit Assignment"
+                                Click="SubmitAssignment_Click"
+                                Width="150"
+                                HorizontalAlignment="Left"/>        
+
                     </StackPanel>
 
                 </GroupBox>

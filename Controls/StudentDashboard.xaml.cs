@@ -4,6 +4,8 @@ using System.Windows;
 using System.Windows.Controls;
 using MySql.Data.MySqlClient;
 using StudentCanvasApp.Models;
+using System.IO;
+
 
 namespace StudentCanvasApp.Controls
 {
@@ -14,6 +16,9 @@ namespace StudentCanvasApp.Controls
         private string _studentName;
         private ObservableCollection<Class> _classes = new ObservableCollection<Class>();
         private ObservableCollection<Assignment> _assignments = new ObservableCollection<Assignment>();
+        private string _selectedFilePath = null;
+        private string _submittedFilePath = null;
+
 
         private string connectionString = "server=localhost;port=3306;user=student;password=1234;database=schoolmanagement;";
 
@@ -102,26 +107,34 @@ namespace StudentCanvasApp.Controls
         private void AssignmentListBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             var selectedAssignment = AssignmentListBox.SelectedItem as Assignment;
-            if (selectedAssignment == null) return;
+            if (selectedAssignment == null)
+                return;
 
+            // Show basic assignment info
             AssignmentTitle.Text = $"Title: {selectedAssignment.Title}";
             AssignmentDue.Text = $"Due: {(selectedAssignment.DueDate.HasValue ? selectedAssignment.DueDate.Value.ToString("dd MMM yyyy") : "No due date")}";
             AssignmentDescription.Text = $"Description: {selectedAssignment.Description}";
 
+            // Reset UI
             SubmissionTextBox.Clear();
             SubmissionTextBox.IsReadOnly = false;
             SubmitAssignmentButton.IsEnabled = true;
             SubmissionStatus.Text = "Not yet submitted.";
+            SelectedFileLabel.Text = "No file selected";
+            DownloadFileButton.Visibility = Visibility.Collapsed;
+            _submittedFilePath = null;
+            _selectedFilePath = null;
 
             using (MySqlConnection conn = new MySqlConnection(connectionString))
             {
                 conn.Open();
 
                 string checkQuery = @"
-            SELECT SubmissionText, SubmittedAt
-            FROM submission
-            WHERE AssignmentID = @AssignmentID AND StudentID = @StudentID
-            LIMIT 1";
+                    SELECT SubmissionText, SubmittedAt, FilePath
+                    FROM submission
+                    WHERE AssignmentID = @AssignmentID AND StudentID = @StudentID
+                    ORDER BY SubmittedAt DESC
+                    LIMIT 1";
 
                 MySqlCommand cmd = new MySqlCommand(checkQuery, conn);
                 cmd.Parameters.AddWithValue("@AssignmentID", selectedAssignment.AssignmentID);
@@ -130,13 +143,32 @@ namespace StudentCanvasApp.Controls
                 var reader = cmd.ExecuteReader();
                 if (reader.Read())
                 {
-                    string text = reader.GetString("SubmissionText");
+                    string submittedText = reader.GetString("SubmissionText");
                     DateTime submittedAt = reader.GetDateTime("SubmittedAt");
+                    string filePath = reader.IsDBNull(reader.GetOrdinal("FilePath")) ? null : reader.GetString("FilePath");
 
-                    SubmissionTextBox.Text = text;
-                    SubmissionTextBox.IsReadOnly = true;
-                    SubmitAssignmentButton.IsEnabled = false;
+                    SubmissionTextBox.Text = submittedText;
                     SubmissionStatus.Text = $"✅ Submitted at {submittedAt:dd MMM yyyy HH:mm}";
+                    SelectedFileLabel.Text = filePath != null ? System.IO.Path.GetFileName(filePath) : "No file submitted";
+                    DownloadFileButton.Visibility = filePath != null ? Visibility.Visible : Visibility.Collapsed;
+                    _submittedFilePath = filePath;
+
+                    // 🔒 Allow resubmission if still before due date
+                    if (selectedAssignment.DueDate.HasValue && selectedAssignment.DueDate.Value > DateTime.Now)
+                    {
+                        SubmissionTextBox.IsReadOnly = false;
+                        SubmitAssignmentButton.IsEnabled = true;
+                    }
+                    else
+                    {
+                        SubmissionTextBox.IsReadOnly = true;
+                        SubmitAssignmentButton.IsEnabled = false;
+                    }
+                }
+                else
+                {
+                    // No previous submission
+                    SubmissionStatus.Text = "❌ Not yet submitted.";
                 }
             }
         }
@@ -144,48 +176,98 @@ namespace StudentCanvasApp.Controls
 
         private void SubmitAssignment_Click(object sender, RoutedEventArgs e)
         {
+            // Get selected assignment
             var selectedAssignment = AssignmentListBox.SelectedItem as Assignment;
+
             if (selectedAssignment == null)
             {
-                MessageBox.Show("Please select an assignment first.");
+                MessageBox.Show("Please select an assignment.");
                 return;
             }
 
+            // Check if due date has passed
+            if (selectedAssignment.DueDate.HasValue && selectedAssignment.DueDate.Value < DateTime.Now)
+            {
+                MessageBox.Show("You cannot submit this assignment after the due date.");
+                return;
+            }
 
             string submissionText = SubmissionTextBox.Text.Trim();
-            if (string.IsNullOrEmpty(submissionText))
+            string fileName = _selectedFilePath != null ? System.IO.Path.GetFileName(_selectedFilePath) : null;
+            string targetPath = null;
+
+            // Optional: save uploaded file to a "submissions" folder
+            if (_selectedFilePath != null)
             {
-                MessageBox.Show("Submission cannot be empty.");
-                return;
+                string folder = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "submissions");
+                System.IO.Directory.CreateDirectory(folder);
+                targetPath = System.IO.Path.Combine(folder, fileName);
+                System.IO.File.Copy(_selectedFilePath, targetPath, true);
             }
 
+            // Insert or update submission
             using (MySqlConnection conn = new MySqlConnection(connectionString))
             {
                 conn.Open();
 
-                string query = @"
-            INSERT INTO submission (AssignmentID, StudentID, SubmissionText, SubmittedAt)
-            VALUES (@AssignmentID, @StudentID, @SubmissionText, NOW())";
+                string upsert = @"
+                    INSERT INTO submission (AssignmentID, StudentID, SubmissionText, FilePath, SubmittedAt)
+                    VALUES (@AssignmentID, @StudentID, @SubmissionText, @FilePath, NOW())
+                    ON DUPLICATE KEY UPDATE
+                    SubmissionText = @SubmissionText,
+                    FilePath = @FilePath,
+                    SubmittedAt = NOW()";
 
-                MySqlCommand cmd = new MySqlCommand(query, conn);
+                MySqlCommand cmd = new MySqlCommand(upsert, conn);
                 cmd.Parameters.AddWithValue("@AssignmentID", selectedAssignment.AssignmentID);
                 cmd.Parameters.AddWithValue("@StudentID", _studentId);
                 cmd.Parameters.AddWithValue("@SubmissionText", submissionText);
+                cmd.Parameters.AddWithValue("@FilePath", targetPath ?? (object)DBNull.Value);
 
                 int rows = cmd.ExecuteNonQuery();
-
                 if (rows > 0)
                 {
-                    MessageBox.Show("Assignment submitted successfully!");
-
-                    // Trigger the assignment selection again to refresh status
-                    AssignmentListBox_SelectionChanged(null, null);
-
+                    MessageBox.Show("Submission saved.");
+                    var current = AssignmentListBox.SelectedItem;
+                    AssignmentListBox.SelectedItem = null;
+                    AssignmentListBox.SelectedItem = current;
                 }
                 else
                 {
-                    MessageBox.Show("Submission failed. Please try again.");
+                    MessageBox.Show("Submission failed.");
                 }
+            }
+
+        }
+
+        private void ChooseFile_Click(object sender, RoutedEventArgs e)
+        {
+            Microsoft.Win32.OpenFileDialog dlg = new Microsoft.Win32.OpenFileDialog();
+            dlg.Filter = "All Files|*.*";
+
+            bool? result = dlg.ShowDialog();
+            if (result == true)
+            {
+                _selectedFilePath = dlg.FileName;
+                SelectedFileLabel.Text = System.IO.Path.GetFileName(_selectedFilePath);
+            }
+        }
+
+        private void DownloadFileButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (string.IsNullOrEmpty(_submittedFilePath) || !File.Exists(_submittedFilePath))
+            {
+                MessageBox.Show("The submitted file could not be found.");
+                return;
+            }
+
+            try
+            {
+                System.Diagnostics.Process.Start("explorer.exe", _submittedFilePath);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Could not open file: " + ex.Message);
             }
         }
 
