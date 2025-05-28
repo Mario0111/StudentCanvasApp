@@ -93,6 +93,10 @@ namespace StudentCanvasApp.Controls
         {
             _mainWindow.NavigateTo(new RegisterControl(_mainWindow));
         }
+        private void ForgotPassword_Click(object sender, RoutedEventArgs e)
+        {
+            _mainWindow.NavigateTo(new PasswordResetControl(_mainWindow));
+        }
 
     }
 }

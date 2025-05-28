@@ -67,6 +67,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Controls\ResetPasswordConfirmControl.xaml.cs">
+      <DependentUpon>ResetPasswordConfirmControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Utils\EmailUtils.cs" />
     <Page Include="Controls\ChangePasswordWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -79,7 +83,15 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Controls\PasswordResetControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Controls\RegisterControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Controls\ResetPasswordConfirmControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -103,6 +115,9 @@
     </Compile>
     <Compile Include="Controls\LoginControl.xaml.cs">
       <DependentUpon>LoginControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\PasswordResetControl.xaml.cs">
+      <DependentUpon>PasswordResetControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="Controls\RegisterControl.xaml.cs">
       <DependentUpon>RegisterControl.xaml</DependentUpon>

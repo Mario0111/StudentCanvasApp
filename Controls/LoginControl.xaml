@@ -40,13 +40,12 @@
                 HorizontalAlignment="Center"
                 Click="Login_Click"/>
 
-        <Button Content="Create Student Account"
-                Grid.Row="4"
-                Height="30"
-                Width="180"
-                HorizontalAlignment="Center"
-                Margin="0,10,0,0"
-                Click="CreateAccount_Click"/>
+        <StackPanel Grid.Row="4" Margin="0,10,0,0" HorizontalAlignment="Center">
+            <Button Content="Create Student Account" Click="CreateAccount_Click" Margin="0,0,0,5" Width="180"/>
+            <Button Content="Forgot Password?" Click="ForgotPassword_Click" Width="180"/>
+        </StackPanel>
+
+
 
     </Grid>
 </UserControl>
