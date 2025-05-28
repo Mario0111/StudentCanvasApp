@@ -6,6 +6,7 @@ using System.Collections.ObjectModel;
 using System.IO;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Media.Imaging;
 
 
 namespace StudentCanvasApp.Controls
@@ -94,6 +95,7 @@ namespace StudentCanvasApp.Controls
 
                 ClassListBox.ItemsSource = null;
                 ClassListBox.ItemsSource = _classes;
+                LoadProfilePicture();
             }
         }
 
@@ -307,6 +309,73 @@ namespace StudentCanvasApp.Controls
             catch (Exception ex)
             {
                 MessageBox.Show("Could not open file: " + ex.Message);
+            }
+        }
+        private void ChangePassword_Click(object sender, RoutedEventArgs e)
+        {
+            var changeWindow = new ChangePasswordWindow(_studentId);
+            changeWindow.Owner = _mainWindow;
+            changeWindow.ShowDialog();
+        }
+
+        private void UploadProfilePicture_Click(object sender, RoutedEventArgs e)
+        {
+            var dialog = new Microsoft.Win32.OpenFileDialog
+            {
+                Filter = "Image files (*.jpg, *.jpeg, *.png)|*.jpg;*.jpeg;*.png"
+            };
+
+            if (dialog.ShowDialog() == true)
+            {
+                string selectedFile = dialog.FileName;
+                string fileName = System.IO.Path.GetFileName(selectedFile);
+                string destinationDir = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "ProfilePictures");
+
+                if (!Directory.Exists(destinationDir))
+                    Directory.CreateDirectory(destinationDir);
+
+                string destinationPath = Path.Combine(destinationDir, $"{_studentId}_{fileName}");
+                File.Copy(selectedFile, destinationPath, true);
+
+                // Save path in database
+                using (var conn = new MySqlConnection(connectionString))
+                {
+                    conn.Open();
+                    var cmd = new MySqlCommand("UPDATE student SET ProfilePicturePath = @path WHERE StudentID = @id", conn);
+                    cmd.Parameters.AddWithValue("@path", destinationPath);
+                    cmd.Parameters.AddWithValue("@id", _studentId);
+                    cmd.ExecuteNonQuery();
+                }
+
+                LoadProfilePicture(destinationPath);
+            }
+        }
+
+        private void LoadProfilePicture(string path = null)
+        {
+            if (string.IsNullOrEmpty(path))
+            {
+                using (var conn = new MySqlConnection(connectionString))
+                {
+                    conn.Open();
+                    var cmd = new MySqlCommand("SELECT ProfilePicturePath FROM student WHERE StudentID = @id", conn);
+                    cmd.Parameters.AddWithValue("@id", _studentId);
+                    var result = cmd.ExecuteScalar();
+                    if (result != null && result != DBNull.Value)
+                        path = result.ToString();
+                }
+            }
+
+            if (!string.IsNullOrEmpty(path) && File.Exists(path))
+            {
+                ProfileImage.Source = new BitmapImage(new Uri(path));
+                UploadButton.Visibility = Visibility.Collapsed;
+            }
+            else
+            {
+                // No profile image, show upload button
+                ProfileImage.Source = null;
+                UploadButton.Visibility = Visibility.Visible;
             }
         }
 
