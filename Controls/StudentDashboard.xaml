@@ -40,17 +40,18 @@
                 <!-- Left Column: Class & Assignments -->
                 <StackPanel Grid.Column="0" Margin="0,0,20,0">
                     <GroupBox Header="Enrolled Classes" Margin="0,0,0,10">
-                        <ListBox x:Name="ClassListBox" Height="150"
-                                 SelectionChanged="ClassListBox_SelectionChanged">
+                        <ListBox x:Name="ClassListBox" Height="150" SelectionChanged="ClassListBox_SelectionChanged">
                             <ListBox.ItemTemplate>
                                 <DataTemplate>
                                     <StackPanel>
-                                        <TextBlock Text="{Binding ClassName}" FontWeight="Bold"/>
-                                        <TextBlock Text="{Binding TeacherName}" FontStyle="Italic" FontSize="12"/>
+                                        <TextBlock Text="{Binding Name}" FontWeight="Bold"/>
+                                        <TextBlock Text="{Binding TeacherName}" FontStyle="Italic"/>
+                                        <TextBlock Text="{Binding AverageGradeText}" Foreground="Gray"/>
                                     </StackPanel>
                                 </DataTemplate>
                             </ListBox.ItemTemplate>
                         </ListBox>
+
                     </GroupBox>
 
                     <GroupBox Header="Assignments">
@@ -73,6 +74,8 @@
                         <TextBlock x:Name="AssignmentTitle" FontWeight="SemiBold"/>
                         <TextBlock x:Name="AssignmentDue"/>
                         <TextBlock x:Name="AssignmentDescription" TextWrapping="Wrap" Margin="0,5,0,10"/>
+                        <TextBlock x:Name="GradeTextBlock" FontWeight="Bold" Margin="0,5,0,0"/>
+
 
                         <!-- 📌 Status Label -->
                         <TextBlock x:Name="SubmissionStatus"

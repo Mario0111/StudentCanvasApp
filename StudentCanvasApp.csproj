@@ -101,6 +101,7 @@
     <Compile Include="Models\Enrollment.cs" />
     <Compile Include="Models\Grade.cs" />
     <Compile Include="Models\Student.cs" />
+    <Compile Include="Models\Submission.cs" />
     <Compile Include="Models\Teacher.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>

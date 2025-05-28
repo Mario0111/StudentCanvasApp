@@ -1,10 +1,11 @@
-﻿using System;
+﻿using MySql.Data.MySqlClient;
+using StudentCanvasApp.Models;
+using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.IO;
 using System.Windows;
 using System.Windows.Controls;
-using MySql.Data.MySqlClient;
-using StudentCanvasApp.Models;
-using System.IO;
 
 
 namespace StudentCanvasApp.Controls
@@ -38,12 +39,13 @@ namespace StudentCanvasApp.Controls
         private void LoadStudentData()
         {
             WelcomeText.Text = $"Welcome, {_studentName}!";
-
             _classes.Clear();
 
             using (MySqlConnection conn = new MySqlConnection(connectionString))
             {
                 conn.Open();
+
+                // 1. Load all classes for the student
                 string query = @"
                     SELECT c.ClassID, c.ClassName, t.name AS TeacherName
                     FROM enrollment e
@@ -55,17 +57,46 @@ namespace StudentCanvasApp.Controls
                 cmd.Parameters.AddWithValue("@StudentID", _studentId);
 
                 var reader = cmd.ExecuteReader();
+                var loadedClasses = new List<Class>();
+
                 while (reader.Read())
                 {
-                    _classes.Add(new Class
+                    loadedClasses.Add(new Class
                     {
                         ClassID = reader.GetInt32("ClassID"),
                         ClassName = reader.GetString("ClassName"),
                         TeacherName = reader.GetString("TeacherName")
                     });
                 }
+
+                reader.Close();
+
+                // 2. For each class, fetch the average grade
+                foreach (var cls in loadedClasses)
+                {
+                    string avgQuery = @"
+                        SELECT AVG(grade)
+                        FROM submission s
+                        JOIN assignment a ON a.AssignmentID = s.AssignmentID
+                        WHERE a.ClassID = @ClassID AND s.StudentID = @StudentID AND s.Grade IS NOT NULL";
+
+                    MySqlCommand avgCmd = new MySqlCommand(avgQuery, conn);
+                    avgCmd.Parameters.AddWithValue("@ClassID", cls.ClassID);
+                    avgCmd.Parameters.AddWithValue("@StudentID", _studentId);
+
+                    object result = avgCmd.ExecuteScalar();
+                    cls.AverageGradeText = result != DBNull.Value
+                        ? $"Total Grade: {Math.Round(Convert.ToDouble(result), 2)}/10"
+                        : "Total Grade: N/A";
+
+                    _classes.Add(cls);
+                }
+
+                ClassListBox.ItemsSource = null;
+                ClassListBox.ItemsSource = _classes;
             }
         }
+
 
         private void ClassListBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
@@ -130,7 +161,7 @@ namespace StudentCanvasApp.Controls
                 conn.Open();
 
                 string checkQuery = @"
-                    SELECT SubmissionText, SubmittedAt, FilePath
+                    SELECT SubmissionText, SubmittedAt, FilePath, grade
                     FROM submission
                     WHERE AssignmentID = @AssignmentID AND StudentID = @StudentID
                     ORDER BY SubmittedAt DESC
@@ -163,6 +194,14 @@ namespace StudentCanvasApp.Controls
                     {
                         SubmissionTextBox.IsReadOnly = true;
                         SubmitAssignmentButton.IsEnabled = false;
+                    }
+                    if (reader["grade"] != DBNull.Value)
+                    {
+                        GradeTextBlock.Text = $"Grade: {reader["grade"]}/10";
+                    }
+                    else
+                    {
+                        GradeTextBlock.Text = "Grade: Not yet assigned";
                     }
                 }
                 else
