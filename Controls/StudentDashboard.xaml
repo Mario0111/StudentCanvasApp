@@ -34,30 +34,30 @@
                         <Image x:Name="ProfileImage" Stretch="UniformToFill"/>
                     </Border>
                     <Button x:Name="ChangePictureButton"
-                Content="Change Picture"
-                Click="UploadProfilePicture_Click"
-                Width="80"
-                Height="22"
-                FontSize="11"
-                Visibility="Collapsed"
-                HorizontalAlignment="Center"
-                Margin="0,5,0,0"/>
+                            Content="Change Picture"
+                            Click="UploadProfilePicture_Click"
+                            Width="80"
+                            Height="22"
+                            FontSize="11"
+                            Visibility="Collapsed"
+                            HorizontalAlignment="Center"
+                            Margin="0,5,0,0"/>
                     <Button x:Name="UploadButton"
-                Content="Upload Picture"
-                Click="UploadProfilePicture_Click"
-                Width="80"
-                Height="22"
-                FontSize="11"
-                Visibility="Collapsed"
-                HorizontalAlignment="Center"
-                Margin="0,5,0,0"/>
+                            Content="Upload Picture"
+                            Click="UploadProfilePicture_Click"
+                            Width="80"
+                            Height="22"
+                            FontSize="11"
+                            Visibility="Collapsed"
+                            HorizontalAlignment="Center"
+                            Margin="0,5,0,0"/>
                 </StackPanel>
 
                 <TextBlock x:Name="WelcomeText"
-               FontWeight="Bold"
-               FontSize="16"
-               VerticalAlignment="Center"
-               Margin="10,0,0,0"/>
+                           FontWeight="Bold"
+                           FontSize="16"
+                           VerticalAlignment="Center"
+                           Margin="10,0,0,0"/>
             </StackPanel>
 
 
@@ -76,7 +76,7 @@
                             <ListBox.ItemTemplate>
                                 <DataTemplate>
                                     <StackPanel>
-                                        <TextBlock Text="{Binding Name}" FontWeight="Bold"/>
+                                        <TextBlock Text="{Binding ClassName}" FontWeight="Bold"/>
                                         <TextBlock Text="{Binding TeacherName}" FontStyle="Italic"/>
                                         <TextBlock Text="{Binding AverageGradeText}" Foreground="Gray"/>
                                     </StackPanel>

@@ -13,5 +13,6 @@ namespace StudentCanvasApp
     /// </summary>
     public partial class App : Application
     {
+        public static string ConnectionString { get; } = "server=localhost;user=student;password=1234;database=schoolmanagement;";
     }
 }

@@ -57,7 +57,14 @@ namespace StudentCanvasApp.Controls
 
                     if (reader.Read())
                     {
+                        if (role == "student" && reader["IsApproved"] is bool isApproved && !isApproved)
+                        {
+                            MessageBox.Show("Account not yet approved. Please wait for admin confirmation.");
+                            return;
+                        }
+
                         MessageTextBlock.Text = "";
+
                         if (role == "student")
                         {
                             int studentId = reader.GetInt32("StudentID");
@@ -67,12 +74,12 @@ namespace StudentCanvasApp.Controls
                         else
                         {
                             MessageBox.Show($"{role} login successful (dashboard not yet implemented).");
-                            // You can later redirect to TeacherDashboard or AdminDashboard here
                         }
                     }
                     else
                     {
-                        MessageTextBlock.Text = "Login failed. Check your credentials.";
+                        MessageTextBlock.Text = "User Credentials are not correct.";
+                        return;
                     }
                 }
                 catch (Exception ex)
@@ -81,5 +88,11 @@ namespace StudentCanvasApp.Controls
                 }
             }
         }
+
+        private void CreateAccount_Click(object sender, RoutedEventArgs e)
+        {
+            _mainWindow.NavigateTo(new RegisterControl(_mainWindow));
+        }
+
     }
 }
