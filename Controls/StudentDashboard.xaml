@@ -27,25 +27,39 @@
 
             <!-- Welcome Message -->
             <!-- Welcome with profile image -->
+            <!-- Welcome with profile image and change picture -->
             <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="0,0,0,20" VerticalAlignment="Center">
-                <Border Width="80" Height="80" BorderBrush="Gray" BorderThickness="1" Margin="0,0,10,0">
-                    <Grid>
+                <StackPanel HorizontalAlignment="Center">
+                    <Border Width="80" Height="80" BorderBrush="Gray" BorderThickness="1" Margin="0,0,10,0">
                         <Image x:Name="ProfileImage" Stretch="UniformToFill"/>
-                        <Button x:Name="UploadButton"
-                    Content="Upload"
-                    Click="UploadProfilePicture_Click"
-                    Visibility="Collapsed"
-                    HorizontalAlignment="Center"
-                    VerticalAlignment="Center"
-                    Padding="4,2"/>
-                    </Grid>
-                </Border>
+                    </Border>
+                    <Button x:Name="ChangePictureButton"
+                Content="Change Picture"
+                Click="UploadProfilePicture_Click"
+                Width="80"
+                Height="22"
+                FontSize="11"
+                Visibility="Collapsed"
+                HorizontalAlignment="Center"
+                Margin="0,5,0,0"/>
+                    <Button x:Name="UploadButton"
+                Content="Upload Picture"
+                Click="UploadProfilePicture_Click"
+                Width="80"
+                Height="22"
+                FontSize="11"
+                Visibility="Collapsed"
+                HorizontalAlignment="Center"
+                Margin="0,5,0,0"/>
+                </StackPanel>
 
                 <TextBlock x:Name="WelcomeText"
                FontWeight="Bold"
                FontSize="16"
-               VerticalAlignment="Center"/>
+               VerticalAlignment="Center"
+               Margin="10,0,0,0"/>
             </StackPanel>
+
 
 
             <!-- Main Content Area -->
@@ -134,8 +148,16 @@
 
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,10,0,0">
                 <Button Content="Change Password" Click="ChangePassword_Click" Margin="0,0,10,0" Width="130"/>
+                <Button Content="Delete Account"
+                        Click="DeleteAccount_Click"
+                        Background="Red"
+                        Foreground="White"
+                        Margin="0,0,10,0"
+                        Width="120"/>
                 <Button Content="Logout" Click="Logout_Click" Width="80"/>
             </StackPanel>
+
+
 
         </Grid>
     </ScrollViewer>

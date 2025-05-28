@@ -368,16 +368,53 @@ namespace StudentCanvasApp.Controls
 
             if (!string.IsNullOrEmpty(path) && File.Exists(path))
             {
-                ProfileImage.Source = new BitmapImage(new Uri(path));
+                var bitmap = new BitmapImage();
+                using (var stream = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.Read))
+                {
+                    bitmap.BeginInit();
+                    bitmap.CacheOption = BitmapCacheOption.OnLoad;
+                    bitmap.StreamSource = stream;
+                    bitmap.EndInit();
+                }
+                bitmap.Freeze(); // makes it cross-thread safe
+                ProfileImage.Source = bitmap;
+
                 UploadButton.Visibility = Visibility.Collapsed;
+                ChangePictureButton.Visibility = Visibility.Visible;
             }
             else
             {
-                // No profile image, show upload button
                 ProfileImage.Source = null;
                 UploadButton.Visibility = Visibility.Visible;
+                ChangePictureButton.Visibility = Visibility.Collapsed;
             }
         }
+
+        private void DeleteAccount_Click(object sender, RoutedEventArgs e)
+        {
+            var result = MessageBox.Show("Are you sure you want to delete your account? This action cannot be undone.",
+                                         "Confirm Deletion",
+                                         MessageBoxButton.YesNo,
+                                         MessageBoxImage.Warning);
+
+            if (result == MessageBoxResult.Yes)
+            {
+                using (var conn = new MySqlConnection(connectionString))
+                {
+                    conn.Open();
+
+                    var cmd = new MySqlCommand("DELETE FROM student WHERE StudentID = @id", conn);
+                    cmd.Parameters.AddWithValue("@id", _studentId);
+                    cmd.ExecuteNonQuery();
+                }
+
+                MessageBox.Show("Your account has been deleted.");
+
+                // Navigate back to login screen
+                _mainWindow.NavigateTo(new LoginControl(_mainWindow));
+            }
+        }
+
 
 
         private void Logout_Click(object sender, RoutedEventArgs e)
