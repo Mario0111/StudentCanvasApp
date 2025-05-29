@@ -70,6 +70,12 @@
     <Compile Include="Controls\ResetPasswordConfirmControl.xaml.cs">
       <DependentUpon>ResetPasswordConfirmControl.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Controls\TeacherDashboard.xaml.cs">
+      <DependentUpon>TeacherDashboard.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\ViewClassesControl.xaml.cs">
+      <DependentUpon>ViewClassesControl.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Utils\EmailUtils.cs" />
     <Page Include="Controls\ChangePasswordWindow.xaml">
       <SubType>Designer</SubType>
@@ -96,6 +102,14 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Controls\StudentDashboard.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Controls\TeacherDashboard.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Controls\ViewClassesControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

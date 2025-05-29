@@ -1,0 +1,22 @@
+﻿<UserControl x:Class="StudentCanvasApp.Controls.ViewClassesControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             Height="Auto" Width="Auto">
+    <Grid Margin="20">
+        <StackPanel>
+            <TextBlock Text="Your Classes" FontSize="18" FontWeight="Bold" Margin="0,0,0,10"/>
+            <ListBox x:Name="ClassListBox" Height="300">
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <StackPanel Margin="0,5">
+                            <TextBlock Text="{Binding ClassName}" FontWeight="SemiBold"/>
+                            <TextBlock Text="{Binding StudentCountText}" FontStyle="Italic" Foreground="Gray"/>
+                        </StackPanel>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+            <Button Content="← Back" Click="BackButton_Click" Width="100" Margin="0,10,0,10"/>
+        </StackPanel>
+    </Grid>
+</UserControl>
+
