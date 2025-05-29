@@ -20,6 +20,7 @@ namespace StudentCanvasApp.Controls
         private void SubmitRegister_Click(object sender, RoutedEventArgs e)
         {
             string name = NameTextBox.Text.Trim();
+            string lastName = LastNameTextBox.Text.Trim();
             string email = EmailTextBox.Text.Trim();
             string password = PasswordBox.Password.Trim();
             string confirm = ConfirmBox.Password.Trim();
@@ -45,8 +46,9 @@ namespace StudentCanvasApp.Controls
                 {
                     conn.Open();
 
-                    var cmd = new MySqlCommand("INSERT INTO student (Name, Email, Password, IsApproved, VerificationToken) VALUES (@Name, @Email, @Password, 0, @Token)", conn);
+                    var cmd = new MySqlCommand("INSERT INTO student (Name, LastName, Email, Password, IsApproved, VerificationToken) VALUES (@Name, @LastName, @Email, @Password, 0, @Token)", conn);
                     cmd.Parameters.AddWithValue("@Name", name);
+                    cmd.Parameters.AddWithValue("@LastName", lastName);
                     cmd.Parameters.AddWithValue("@Email", email);
                     cmd.Parameters.AddWithValue("@Password", password);
                     cmd.Parameters.AddWithValue("@Token", token);

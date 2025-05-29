@@ -76,6 +76,10 @@
     <Compile Include="Controls\ViewClassesControl.xaml.cs">
       <DependentUpon>ViewClassesControl.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Controls\ViewStudentsControl.xaml.cs">
+      <DependentUpon>ViewStudentsControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Models\StudentOverview.cs" />
     <Compile Include="Utils\EmailUtils.cs" />
     <Page Include="Controls\ChangePasswordWindow.xaml">
       <SubType>Designer</SubType>
@@ -110,6 +114,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Controls\ViewClassesControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Controls\ViewStudentsControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

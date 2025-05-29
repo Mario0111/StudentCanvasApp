@@ -26,7 +26,7 @@ namespace StudentCanvasApp.Controls
         private void ManageStudents_Click(object sender, RoutedEventArgs e)
         {
             // Load the ManageStudentsControl into the main content area
-            //MainContent.Content = new ManageStudentsControl(_mainWindow);
+            MainContent.Content = new ViewStudentsControl(_mainWindow, _teacherId);
         }
 
         private void Assignments_Click(object sender, RoutedEventArgs e)
