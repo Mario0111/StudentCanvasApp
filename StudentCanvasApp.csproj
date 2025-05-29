@@ -76,6 +76,9 @@
     <Compile Include="Controls\TeacherDashboard.xaml.cs">
       <DependentUpon>TeacherDashboard.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Controls\ViewAssignmentsControl.xaml.cs">
+      <DependentUpon>ViewAssignmentsControl.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Controls\ViewClassesControl.xaml.cs">
       <DependentUpon>ViewClassesControl.xaml</DependentUpon>
     </Compile>
@@ -117,6 +120,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Controls\TeacherDashboard.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Controls\ViewAssignmentsControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

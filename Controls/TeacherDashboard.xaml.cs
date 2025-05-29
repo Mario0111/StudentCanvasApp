@@ -32,7 +32,7 @@ namespace StudentCanvasApp.Controls
         private void Assignments_Click(object sender, RoutedEventArgs e)
         {
             // Load the AssignmentsControl into the main content area
-            //MainContent.Content = new AssignmentsControl(_mainWindow);
+            MainContent.Content = new ViewAssignmentsControl(_mainWindow, _teacherId);
         }
 
         private void Logout_Click(object sender, RoutedEventArgs e)
