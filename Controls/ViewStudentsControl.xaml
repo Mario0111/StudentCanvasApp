@@ -16,7 +16,7 @@
              TextChanged="SearchTextBox_TextChanged"/>
 
             <GroupBox Header="Students enrolled in your classes" FontSize="14" FontWeight="SemiBold">
-                <ListBox x:Name="StudentsListBox" Height="300">
+                <ListBox x:Name="StudentsListBox" SelectionChanged="StudentsListBox_SelectionChanged" Height="300">
                     <ListBox.ItemTemplate>
                         <DataTemplate>
                             <Border BorderBrush="LightGray" BorderThickness="1" Margin="0,2" Padding="5">

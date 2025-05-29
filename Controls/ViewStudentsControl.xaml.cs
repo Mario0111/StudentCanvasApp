@@ -57,14 +57,14 @@ namespace StudentCanvasApp.Controls
             FilterStudents(); // apply filter (initially all)
         }
 
-        private void StudentListBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        private void StudentsListBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            var selected = StudentsListBox.SelectedItem as StudentOverview;
-            if (selected != null)
+            if (StudentsListBox.SelectedItem is Student selected)
             {
-                MessageBox.Show($"Future: Show details for {selected.FullName}"); // Replace later with detailed view
+                _mainWindow.NavigateTo(new StudentDetailControl(_mainWindow, selected.StudentID, _teacherId));
             }
         }
+
         private void SearchTextBox_TextChanged(object sender, TextChangedEventArgs e)
         {
             FilterStudents();

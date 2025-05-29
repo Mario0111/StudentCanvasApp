@@ -77,7 +77,7 @@ namespace StudentCanvasApp.Controls
                             int teacherId = reader.GetInt32("TeacherID");
                             _mainWindow.NavigateTo(new TeacherDashboard(_mainWindow, teacherId));
                         }
-                        else
+                        if (role == "admin")
                         {
                             MessageBox.Show($"{role} login successful (dashboard not yet implemented).");
                         }

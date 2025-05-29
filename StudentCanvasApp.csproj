@@ -70,6 +70,9 @@
     <Compile Include="Controls\ResetPasswordConfirmControl.xaml.cs">
       <DependentUpon>ResetPasswordConfirmControl.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Controls\StudentDetailControl.xaml.cs">
+      <DependentUpon>StudentDetailControl.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Controls\TeacherDashboard.xaml.cs">
       <DependentUpon>TeacherDashboard.xaml</DependentUpon>
     </Compile>
@@ -106,6 +109,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Controls\StudentDashboard.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Controls\StudentDetailControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
