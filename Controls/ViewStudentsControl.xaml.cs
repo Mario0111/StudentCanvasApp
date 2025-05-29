@@ -1,6 +1,7 @@
 ﻿using MySql.Data.MySqlClient;
 using StudentCanvasApp.Models;
 using System.Collections.Generic;
+using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 
@@ -10,6 +11,8 @@ namespace StudentCanvasApp.Controls
     {
         private MainWindow _mainWindow;
         private int _teacherId;
+        private List<Student> _allStudents = new List<Student>();
+
 
         public ViewStudentsControl(MainWindow mainWindow, int teacherId)
         {
@@ -22,44 +25,62 @@ namespace StudentCanvasApp.Controls
 
         private void LoadStudents()
         {
-            var students = new List<StudentOverview>();
+            _allStudents.Clear();
+
             using (var conn = new MySqlConnection(App.ConnectionString))
             {
                 conn.Open();
-                string query = @"
-                    SELECT s.StudentID, s.Name, s.LastName, GROUP_CONCAT(c.ClassName SEPARATOR ', ') AS ClassNames
+                var cmd = new MySqlCommand(@"
+                    SELECT s.StudentID, s.Name, s.LastName, GROUP_CONCAT(c.ClassName SEPARATOR ', ') AS Classes
                     FROM student s
                     JOIN enrollment e ON s.StudentID = e.StudentID
                     JOIN class c ON e.ClassID = c.ClassID
                     WHERE c.TeacherID = @teacherId
-                    GROUP BY s.StudentID, s.Name, s.LastName";
+                    GROUP BY s.StudentID, s.Name, s.LastName
+                    ORDER BY s.LastName ASC, s.Name ASC;", conn);
 
-                var cmd = new MySqlCommand(query, conn);
-                cmd.Parameters.AddWithValue("@teacherId", _teacherId);
+                cmd.Parameters.AddWithValue("@teacherId", _teacherId); // make sure you have this
 
                 var reader = cmd.ExecuteReader();
                 while (reader.Read())
                 {
-                    students.Add(new StudentOverview
+                    _allStudents.Add(new Student
                     {
                         StudentID = reader.GetInt32("StudentID"),
-                        FullName = reader.GetString("Name") + " " + reader.GetString("LastName"),
-                        ClassNames = reader.GetString("ClassNames")
+                        Name = reader.GetString("Name"),
+                        LastName = reader.GetString("LastName"),
+                        Classes = reader.GetString("Classes").Split(',').Select(x => x.Trim()).ToList()
                     });
                 }
             }
 
-            StudentListBox.ItemsSource = students;
+            FilterStudents(); // apply filter (initially all)
         }
 
         private void StudentListBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            var selected = StudentListBox.SelectedItem as StudentOverview;
+            var selected = StudentsListBox.SelectedItem as StudentOverview;
             if (selected != null)
             {
                 MessageBox.Show($"Future: Show details for {selected.FullName}"); // Replace later with detailed view
             }
         }
+        private void SearchTextBox_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            FilterStudents();
+        }
+
+        private void FilterStudents()
+        {
+            string query = SearchTextBox.Text.Trim().ToLower();
+
+            var filtered = _allStudents
+                .Where(s => s.FullName.ToLower().Contains(query))
+                .ToList();
+
+            StudentsListBox.ItemsSource = filtered;
+        }
+
 
         private void BackButton_Click(object sender, RoutedEventArgs e)
         {
