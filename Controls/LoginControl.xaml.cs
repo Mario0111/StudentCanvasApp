@@ -79,7 +79,9 @@ namespace StudentCanvasApp.Controls
                         }
                         if (role == "admin")
                         {
-                            MessageBox.Show($"{role} login successful (dashboard not yet implemented).");
+                            string name = reader.GetString("Name");
+                            int adminId = reader.GetInt32("AdminID");
+                            _mainWindow.NavigateTo(new AdminDashboard(_mainWindow, adminId));
                         }
                     }
                     else
