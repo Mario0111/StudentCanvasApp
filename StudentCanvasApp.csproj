@@ -67,6 +67,9 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Controls\AssignmentSubmissionsControl.xaml.cs">
+      <DependentUpon>AssignmentSubmissionsControl.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Controls\ResetPasswordConfirmControl.xaml.cs">
       <DependentUpon>ResetPasswordConfirmControl.xaml</DependentUpon>
     </Compile>
@@ -87,6 +90,10 @@
     </Compile>
     <Compile Include="Models\StudentOverview.cs" />
     <Compile Include="Utils\EmailUtils.cs" />
+    <Page Include="Controls\AssignmentSubmissionsControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Controls\ChangePasswordWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

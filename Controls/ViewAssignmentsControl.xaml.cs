@@ -1,5 +1,6 @@
 ﻿using MySql.Data.MySqlClient;
 using System.Collections.Generic;
+using System.Windows;
 using System.Windows.Controls;
 
 namespace StudentCanvasApp.Controls
@@ -53,6 +54,20 @@ namespace StudentCanvasApp.Controls
 
             AssignmentListBox.ItemsSource = items;
         }
+
+        private void AssignmentListBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (AssignmentListBox.SelectedItem is AssignmentItem item)
+            {
+                _mainWindow.NavigateTo(new AssignmentSubmissionsControl(_mainWindow, item.AssignmentID, item.Title, _teacherId));
+            }
+        }
+
+        private void Back_Click(object sender, RoutedEventArgs e)
+        {
+            _mainWindow.NavigateTo(new TeacherDashboard(_mainWindow, _teacherId));
+        }
+
 
         private class AssignmentItem
         {

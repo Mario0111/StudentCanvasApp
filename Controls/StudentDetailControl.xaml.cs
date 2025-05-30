@@ -61,13 +61,13 @@ namespace StudentCanvasApp.Controls
             {
                 conn.Open();
                 var cmd = new MySqlCommand(@"
-            SELECT c.ClassID, c.ClassName, AVG(s.Grade) AS AvgGrade
-            FROM class c
-            JOIN enrollment e ON e.ClassID = c.ClassID
-            LEFT JOIN assignment a ON a.ClassID = c.ClassID
-            LEFT JOIN submission s ON s.AssignmentID = a.AssignmentID AND s.StudentID = @studentId
-            WHERE e.StudentID = @studentId AND c.TeacherID = @teacherId
-            GROUP BY c.ClassID, c.ClassName", conn);
+                SELECT c.ClassID, c.ClassName, AVG(s.Grade) AS AvgGrade
+                FROM class c
+                JOIN enrollment e ON e.ClassID = c.ClassID
+                LEFT JOIN assignment a ON a.ClassID = c.ClassID
+                LEFT JOIN submission s ON s.AssignmentID = a.AssignmentID AND s.StudentID = @studentId
+                WHERE e.StudentID = @studentId AND c.TeacherID = @teacherId
+                GROUP BY c.ClassID, c.ClassName", conn);
 
                 cmd.Parameters.AddWithValue("@studentId", _studentId);
                 cmd.Parameters.AddWithValue("@teacherId", _teacherId);

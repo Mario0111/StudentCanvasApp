@@ -61,6 +61,10 @@ namespace StudentCanvasApp.Controls
                 }
             }
         }
+        private void Back_Click(object sender, RoutedEventArgs e)
+        {
+            _mainWindow.NavigateTo(new LoginControl(_mainWindow));
+        }
 
     }
 }

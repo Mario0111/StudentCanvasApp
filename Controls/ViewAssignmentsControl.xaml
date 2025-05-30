@@ -6,12 +6,16 @@
     <Grid Margin="20">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
+            <!-- Title -->
             <RowDefinition Height="*"/>
+            <!-- Assignment List -->
+            <RowDefinition Height="Auto"/>
+            <!-- Back Button -->
         </Grid.RowDefinitions>
 
-        <TextBlock Text="Your Assignments" FontSize="18" FontWeight="Bold" Margin="0,0,0,10"/>
+        <TextBlock Text="Your Assignments" FontSize="18" FontWeight="Bold" Margin="0,0,0,10" Grid.Row="0"/>
 
-        <ListBox x:Name="AssignmentListBox" Grid.Row="1">
+        <ListBox x:Name="AssignmentListBox" SelectionChanged="AssignmentListBox_SelectionChanged" Grid.Row="1">
             <ListBox.ItemTemplate>
                 <DataTemplate>
                     <Border BorderBrush="Gray" BorderThickness="1" Margin="5" Padding="10">
@@ -24,5 +28,8 @@
                 </DataTemplate>
             </ListBox.ItemTemplate>
         </ListBox>
+
+        <!-- Back Button -->
+        <Button Content="Back" Click="Back_Click" HorizontalAlignment="Center" Height="35" Width="100" Grid.Row="2" Margin="0,10,0,0"/>
     </Grid>
 </UserControl>
