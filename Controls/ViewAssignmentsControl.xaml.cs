@@ -65,10 +65,9 @@ namespace StudentCanvasApp.Controls
 
         private void CreateAssignment_Click(object sender, RoutedEventArgs e)
         {
-            MessageBox.Show("Assignment creation not implemented yet.");
-            // Later, navigate to the assignment creation control:
-            // _mainWindow.NavigateTo(new CreateAssignmentControl(_mainWindow, _teacherId));
+            _mainWindow.NavigateTo(new CreateAssignmentControl(_mainWindow, _teacherId));
         }
+
 
 
         private void Back_Click(object sender, RoutedEventArgs e)
