@@ -1,4 +1,5 @@
 ﻿using MySql.Data.MySqlClient;
+using System;
 using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
@@ -7,66 +8,132 @@ namespace StudentCanvasApp.Controls
 {
     public partial class AdminDashboard : UserControl
     {
-        private readonly string connectionString = App.ConnectionString;
         private MainWindow _mainWindow;
-        private int _adminId;
+        private readonly string connectionString = App.ConnectionString;
 
         public AdminDashboard(MainWindow mainWindow, int adminId)
         {
             InitializeComponent();
             _mainWindow = mainWindow;
-            _adminId = adminId;
-
-            LoadPendingStudents(); // o cualquier método de inicialización
+            LoadUsers();
+            LoadClasses();
         }
 
-        private void LoadPendingStudents()
+        private void LoadUsers()
         {
-            var pending = new List<StudentItem>();
+            var students = new List<UserItem>();
+            var teachers = new List<UserItem>();
 
             using (var conn = new MySqlConnection(connectionString))
             {
                 conn.Open();
-                var cmd = new MySqlCommand("SELECT StudentID, Name, LastName, Email FROM student WHERE IsApproved = 0", conn);
+
+                // Students
+                var studentCmd = new MySqlCommand("SELECT StudentID, Name, Email FROM student WHERE IsApproved = 1", conn);
+                var reader = studentCmd.ExecuteReader();
+                while (reader.Read())
+                {
+                    students.Add(new UserItem
+                    {
+                        ID = reader.GetInt32("StudentID"),
+                        Name = reader.GetString("Name"),
+                        Email = reader.GetString("Email"),
+                        Role = "student"
+                    });
+                }
+                reader.Close();
+
+                // Teachers
+                var teacherCmd = new MySqlCommand("SELECT TeacherID, Name, Email FROM teacher", conn);
+                reader = teacherCmd.ExecuteReader();
+                while (reader.Read())
+                {
+                    teachers.Add(new UserItem
+                    {
+                        ID = reader.GetInt32("TeacherID"),
+                        Name = reader.GetString("Name"),
+                        Email = reader.GetString("Email"),
+                        Role = "teacher"
+                    });
+                }
+                reader.Close();
+            }
+
+            StudentsListBox.ItemsSource = students;
+            TeachersListBox.ItemsSource = teachers;
+        }
+
+        private void LoadClasses()
+        {
+            var classes = new List<ClassItem>();
+            using (var conn = new MySqlConnection(connectionString))
+            {
+                conn.Open();
+                var cmd = new MySqlCommand("SELECT ClassID, ClassName FROM class", conn);
                 var reader = cmd.ExecuteReader();
                 while (reader.Read())
                 {
-                    pending.Add(new StudentItem
+                    classes.Add(new ClassItem
                     {
-                        StudentID = reader.GetInt32("StudentID"),
-                        FullName = $"{reader.GetString("Name")} {reader.GetString("LastName")}",
-                        Email = reader.GetString("Email")
+                        ClassID = reader.GetInt32("ClassID"),
+                        ClassName = reader.GetString("ClassName")
                     });
                 }
-                reader.Close(); // 👈 importante cerrar el reader
             }
-
-            PendingListBox.ItemsSource = pending;
+            ClassComboBox.ItemsSource = classes;
         }
 
-
-        private void Approve_Click(object sender, RoutedEventArgs e)
+        private void DeleteUser_Click(object sender, RoutedEventArgs e)
         {
-            if (sender is Button btn && btn.Tag is int studentId)
+            if (sender is Button btn && btn.DataContext is UserItem user)
+            {
+                var result = MessageBox.Show($"Delete {user.Name} ({user.Role})?", "Confirm", MessageBoxButton.YesNo);
+                if (result != MessageBoxResult.Yes) return;
+
+                using (var conn = new MySqlConnection(connectionString))
+                {
+                    conn.Open();
+                    var table = user.Role == "student" ? "student" : "teacher";
+                    var idField = user.Role == "student" ? "StudentID" : "TeacherID";
+                    var cmd = new MySqlCommand($"DELETE FROM {table} WHERE {idField} = @id", conn);
+                    cmd.Parameters.AddWithValue("@id", user.ID);
+                    cmd.ExecuteNonQuery();
+                }
+
+                LoadUsers();
+            }
+        }
+
+        private void AddToClass_Click(object sender, RoutedEventArgs e)
+        {
+            if (StudentsListBox.SelectedItem is UserItem student &&
+                ClassComboBox.SelectedItem is ClassItem classItem)
             {
                 using (var conn = new MySqlConnection(connectionString))
                 {
                     conn.Open();
-                    var cmd = new MySqlCommand("UPDATE student SET IsApproved = 1 WHERE StudentID = @id", conn);
-                    cmd.Parameters.AddWithValue("@id", studentId);
+                    var cmd = new MySqlCommand("INSERT IGNORE INTO enrollment (StudentID, ClassID) VALUES (@sid, @cid)", conn);
+                    cmd.Parameters.AddWithValue("@sid", student.ID);
+                    cmd.Parameters.AddWithValue("@cid", classItem.ClassID);
                     cmd.ExecuteNonQuery();
                 }
 
-                MessageBox.Show("Student approved.");
-                LoadPendingStudents();
+                MessageBox.Show($"{student.Name} added to {classItem.ClassName}");
             }
         }
 
-        private class StudentItem
+        private class UserItem
         {
-            public int StudentID { get; set; }
-            public string FullName { get; set; }
+            public int ID { get; set; }
+            public string Name { get; set; }
             public string Email { get; set; }
+            public string Role { get; set; }
+        }
+
+        private class ClassItem
+        {
+            public int ClassID { get; set; }
+            public string ClassName { get; set; }
         }
     }
 }
