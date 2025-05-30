@@ -87,8 +87,8 @@ namespace StudentCanvasApp.Controls
 
                     object result = avgCmd.ExecuteScalar();
                     cls.AverageGradeText = result != DBNull.Value
-                        ? $"Total Grade: {Math.Round(Convert.ToDouble(result), 2)}/10"
-                        : "Total Grade: N/A";
+                        ? $"Grade: {Math.Round(Convert.ToDouble(result), 2)}/10"
+                        : "Grade: N/A";
 
                     _classes.Add(cls);
                 }

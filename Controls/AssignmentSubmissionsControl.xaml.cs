@@ -91,7 +91,7 @@ namespace StudentCanvasApp.Controls
         {
             if (UngradedListBox.SelectedItem is SubmissionItem item)
             {
-                //_mainWindow.NavigateTo(new StudentSubmissionDetailControl(_mainWindow, item.SubmissionId));
+                _mainWindow.NavigateTo(new StudentSubmissionDetailControl(_mainWindow, item.SubmissionId));
             }
         }
 
@@ -99,7 +99,7 @@ namespace StudentCanvasApp.Controls
         {
             if (GradedListBox.SelectedItem is SubmissionItem item)
             {
-                //_mainWindow.NavigateTo(new StudentSubmissionDetailControl(_mainWindow, item.SubmissionId));
+                _mainWindow.NavigateTo(new StudentSubmissionDetailControl(_mainWindow, item.SubmissionId));
             }
         }
 

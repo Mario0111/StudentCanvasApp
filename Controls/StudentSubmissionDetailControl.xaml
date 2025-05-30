@@ -1,0 +1,29 @@
+﻿<UserControl x:Class="StudentCanvasApp.Controls.StudentSubmissionDetailControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             Height="400" Width="600">
+    <Grid Margin="20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <TextBlock x:Name="SubmissionTitleText" FontSize="16" FontWeight="Bold" Margin="0,0,0,10"/>
+
+        <StackPanel Grid.Row="1">
+            <TextBlock Text="Submitted Text:" FontWeight="Bold" />
+            <TextBlock x:Name="SubmissionTextBlock" TextWrapping="Wrap" Margin="0,0,0,10"/>
+            <TextBlock Text="File:" FontWeight="Bold"/>
+            <Button x:Name="DownloadFileButton" Content="Download File" Click="DownloadFileButton_Click" Margin="0,0,0,10" Width="150"/>
+            <TextBlock x:Name="SubmittedAtText" FontStyle="Italic" Margin="0,5"/>
+            <TextBlock x:Name="GradeText" FontWeight="Bold" Margin="0,5"/>
+        </StackPanel>
+
+        <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Left" Margin="0,10,0,0">
+            <TextBox x:Name="GradeBox" Width="50" Margin="0,0,10,0"/>
+            <Button x:Name="SubmitGradeButton" Content="Submit Grade" Click="SubmitGradeButton_Click" Width="120"/>
+            <Button Content="Back" Click="Back_Click" Margin="10,0,0,0"/>
+        </StackPanel>
+    </Grid>
+</UserControl>
