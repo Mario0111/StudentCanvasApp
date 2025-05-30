@@ -122,6 +122,98 @@ namespace StudentCanvasApp.Controls
             }
         }
 
+        private void AddTeacher_Click(object sender, RoutedEventArgs e)
+        {
+            var name = Microsoft.VisualBasic.Interaction.InputBox("Enter teacher's name:", "Add Teacher", "");
+            var email = Microsoft.VisualBasic.Interaction.InputBox("Enter teacher's email:", "Add Teacher", "");
+            var password = Microsoft.VisualBasic.Interaction.InputBox("Enter teacher's password:", "Add Teacher", "");
+
+            if (string.IsNullOrWhiteSpace(name) || string.IsNullOrWhiteSpace(email))
+            {
+                MessageBox.Show("Name and email cannot be empty.");
+                return;
+            }
+
+            using (var conn = new MySqlConnection(connectionString))
+            {
+                conn.Open();
+                var cmd = new MySqlCommand("INSERT INTO teacher (Name, Email, Password) VALUES (@name, @email, @password)", conn);
+                cmd.Parameters.AddWithValue("@name", name);
+                cmd.Parameters.AddWithValue("@email", email);
+                cmd.Parameters.AddWithValue("@password", password);
+                cmd.ExecuteNonQuery();
+            }
+
+            MessageBox.Show("Teacher added successfully.");
+            LoadUsers();
+        }
+
+        private void CreateClass_Click(object sender, RoutedEventArgs e)
+        {
+            // Prompt for class name
+            var className = Microsoft.VisualBasic.Interaction.InputBox("Enter class name:", "Create Class", "");
+            if (string.IsNullOrWhiteSpace(className))
+            {
+                MessageBox.Show("Class name is required.");
+                return;
+            }
+
+            // Build teacher selection
+            var teachers = new List<(int Id, string Name)>();
+            using (var conn = new MySqlConnection(connectionString))
+            {
+                conn.Open();
+                var cmd = new MySqlCommand("SELECT TeacherID, Name FROM teacher", conn);
+                using (var reader = cmd.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        teachers.Add((reader.GetInt32("TeacherID"), reader.GetString("Name")));
+                    }
+                }
+            }
+
+            if (teachers.Count == 0)
+            {
+                MessageBox.Show("No teachers found.");
+                return;
+            }
+
+            // Create selection dialog
+            string prompt = "Choose a teacher by number:\n";
+            for (int i = 0; i < teachers.Count; i++)
+                prompt += $"{i + 1}. {teachers[i].Name}\n";
+
+            var input = Microsoft.VisualBasic.Interaction.InputBox(prompt, "Select Teacher", "1");
+            if (!int.TryParse(input, out int selectedIndex) || selectedIndex < 1 || selectedIndex > teachers.Count)
+            {
+                MessageBox.Show("Invalid selection.");
+                return;
+            }
+
+            int teacherId = teachers[selectedIndex - 1].Id;
+
+            // Create class
+            using (var conn = new MySqlConnection(connectionString))
+            {
+                conn.Open();
+                var cmd = new MySqlCommand("INSERT INTO class (ClassName, TeacherID) VALUES (@name, @teacherId)", conn);
+                cmd.Parameters.AddWithValue("@name", className);
+                cmd.Parameters.AddWithValue("@teacherId", teacherId);
+                cmd.ExecuteNonQuery();
+            }
+
+            MessageBox.Show("Class created successfully.");
+        }
+
+
+        private void Back_Click(object sender, RoutedEventArgs e)
+        {
+            _mainWindow.NavigateTo(new LoginControl(_mainWindow)); // or wherever you want to return
+        }
+
+
+
         private class UserItem
         {
             public int ID { get; set; }
